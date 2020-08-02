@@ -3,9 +3,43 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="./assets/style/button.css" />
     <title>21 game</title>
   </head>
   <body>
+    <div class="container">
+      <main class="wrapper">
+        <section class="game-field" id="game-field">
+          <div class="game-field__player-info"><span>Player </span> <span id="player-name">1</span></div>
+          <div class="game-field__player-score"><span>Score: </span> <span id="player-score">0</span></div>
+          <div class="game-field__new-game">
+            <div class="game-field__wrapper">
+              <button class="btn btn--border" id="new-game">New Game<span></span></button>
+            </div>
+
+            <div class="game-field__players">
+              <label for="number-of-players">Number of players:</label>
+              <select name="number-of-players" id="number-of-players">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+              </select>
+            </div>
+          </div>
+          <div class="game-field__controllers">
+            <button class="btn btn--border" id="get-card">Get card<span></span></button>
+            <button class="btn btn--future" id="player-end ">Over</button>
+          </div>
+          <div class="game-field__player-card">
+            <ul class="player-card__list" id="card-list"></ul>
+          </div>
+        </section>
+      </main>
+    </div>
     <script src="bundle.js"></script>
   </body>
 </html>
