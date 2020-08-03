@@ -90,3 +90,22 @@ body:before {
   justify-content: space-around;
   margin-bottom: 20px;
 }
+
+.game-field__player-card {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.game-field__player-score,
+.game-field__player-info {
+  color: #ffffff;
+}
+
+.player-card__list {
+  display: flex;
+}
+
+.hidden {
+  display: none;
+}
