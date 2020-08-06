@@ -6,10 +6,10 @@ import {
   gameFieldPlayers,
   cardList,
   playerScore,
-  gameField,
   playerName,
   playAgainButton,
   result,
+  loading,
 } from "./document"
 import { DEFAULT_BASE_VALUE, BaseValueType, CardValues, scoreForWin } from "./const"
 
@@ -34,6 +34,7 @@ let deckId: string
 let playersInGame: number = 1
 let player: number = 0
 let isPositiveOrZero: boolean = false
+
 const playersDetails: Array<IplayersDetails> = [{ id: 0, cards: [], score: 0 }]
 
 const getDeckId: () => void = async () => {
@@ -47,7 +48,7 @@ const getDeckId: () => void = async () => {
   }
 }
 
-const shuffleCard = async (deckId) => {
+const shuffleCard: (deckId: string) => void = async (deckId) => {
   const url = `https://deckofcardsapi.com/api/deck/${deckId}/shuffle/`
   const res = await fetch(url)
   if (res.ok) {
@@ -68,21 +69,27 @@ const onNewGameStarted: () => void = () => {
 }
 
 const getCard: (count: number, deckId: string) => void = async (count, deckId) => {
+  getCardButton.disabled = true
+  loading.classList.add("lds-hourglass")
   const url = `https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${count}`
   const res = await fetch(url)
   if (res.ok) {
     const data = await res.json()
     if (count === 2 && twoAces(data.cards[0], data.cards[1])) {
       data.cards.map((item: cardType) => {
-        cardList.innerHTML += `<li class="list__item"><img src="${item.image}" alt="${item.code}"></li>`
-      })
-      alert("ez")
-    } else {
-      data.cards.map((item: cardType) => {
-        cardList.innerHTML += `<li class="list__item"><img src="${item.image}" alt="${item.code}"></li>`
         addPlayerCard(player, item)
       })
+      loading.classList.remove("lds-hourglass")
+      winWithTwoAces()
+    } else {
+      data.cards.map((item: cardType) => {
+        addPlayerCard(player, item)
+      })
+      getCardButton.disabled = false
+      loading.classList.remove("lds-hourglass")
     }
+  } else {
+    console.log(res.status)
   }
 }
 
@@ -94,12 +101,17 @@ const twoAces: (card1: cardType, card2: cardType) => boolean = (card1, card2) =>
 }
 
 const addPlayerCard: (player: number, card: cardType) => void = (player, card) => {
+  cardList.innerHTML += `<li class="list__item"><img src="${card.image}" alt="${card.code}" class="list__image"></li>`
   playersDetails[player].cards.push(card)
-  /* const some: CardValues = CardValues[CardValues.[card.value.toLowerCase()]] */
-  const cardTitle: any = card.value.toLowerCase()
+  const cardTitle: CardValues =
+    CardValues[Object.keys(CardValues).find((key) => CardValues[key] === card.value.toLowerCase())]
+
   playersDetails[player].score += getCardValue(cardTitle)
+  setTimeout(() => {
+    checkPlayerScore(playersDetails[player].score)
+  }, 400)
+
   changePlayerScore(player)
-  checkPlayerScore(playersDetails[player].score)
 }
 
 const getCardValue: (key: CardValues, baseValueType?: BaseValueType) => number = (
@@ -118,6 +130,7 @@ const checkPlayerScore: (score: number) => void = (score) => {
     onGameOver()
   }
   if (score >= scoreForWin && player !== playersInGame - 1) {
+    alert(playersDetails[player].score)
     nextPlayer()
   }
 }
@@ -143,11 +156,21 @@ const onGameOver: () => void = () => {
   })
 }
 
+const winWithTwoAces: () => void = () => {
+  playAgainButton.classList.remove("hidden")
+  getCardButton.classList.add("hidden")
+  playerEndButton.classList.add("hidden")
+  cardList.classList.add("hidden")
+  result.insertAdjacentHTML("beforeend", `<h2 style="color:#fff">This player has got two aces.</h2>`)
+}
+
 const nextPlayer: () => void = () => {
   if (playersDetails[player].score - scoreForWin <= 0) {
+    console.log("isPositiveOrZero:" + isPositiveOrZero)
     isPositiveOrZero = true
   }
   if (!isPositiveOrZero && player === playersInGame - 2) {
+    console.log("isPositiveOrZero:" + isPositiveOrZero, player)
     lastPlayerWon()
   } else {
     cardList.innerHTML = ""
@@ -180,9 +203,12 @@ const sortArray = (player1, player2) => {
 
 const lastPlayerWon: () => void = () => {
   isPositiveOrZero = true
+  playersDetails.push({ id: player + 1, cards: [], score: 0 })
+  onGameOver()
 }
 
 const playAgain: () => void = () => {
+  shuffleCard(deckId)
   playersDetails.length = 0
   playersDetails.push({ id: 0, cards: [], score: 0 })
   player = 0
