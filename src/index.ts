@@ -34,6 +34,8 @@ let deckId: string
 let playersInGame: number = 1
 let player: number = 0
 let isPositiveOrZero: boolean = false
+let playWithBot: boolean = false
+let gameWasEnded: boolean = false
 
 const playersDetails: Array<IplayersDetails> = [{ id: 0, cards: [], score: 0 }]
 
@@ -64,12 +66,18 @@ const onNewGameStarted: () => void = () => {
   newGame.classList.add("hidden")
   gameFieldPlayers.classList.add("hidden")
 
-  playersInGame = parseInt(numberOfPlayers.value)
+  if (parseInt(numberOfPlayers.value) === 1) {
+    playWithBot = true
+    playersInGame = 2
+  } else {
+    playersInGame = parseInt(numberOfPlayers.value)
+  }
   getCard(2, deckId)
 }
 
 const getCard: (count: number, deckId: string) => void = async (count, deckId) => {
   getCardButton.disabled = true
+  let cardCount = count
   loading.classList.add("lds-hourglass")
   const url = `https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${count}`
   const res = await fetch(url)
@@ -77,13 +85,14 @@ const getCard: (count: number, deckId: string) => void = async (count, deckId) =
     const data = await res.json()
     if (count === 2 && twoAces(data.cards[0], data.cards[1])) {
       data.cards.map((item: cardType) => {
-        addPlayerCard(player, item)
+        addPlayerCard(player, item, count)
       })
       loading.classList.remove("lds-hourglass")
       winWithTwoAces()
     } else {
       data.cards.map((item: cardType) => {
-        addPlayerCard(player, item)
+        cardCount -= 1
+        addPlayerCard(player, item, cardCount)
       })
       getCardButton.disabled = false
       loading.classList.remove("lds-hourglass")
@@ -100,16 +109,18 @@ const twoAces: (card1: cardType, card2: cardType) => boolean = (card1, card2) =>
   return false
 }
 
-const addPlayerCard: (player: number, card: cardType) => void = (player, card) => {
+const addPlayerCard: (player: number, card: cardType, cardCount: number) => void = (player, card, cardCount) => {
   cardList.innerHTML += `<li class="list__item"><img src="${card.image}" alt="${card.code}" class="list__image"></li>`
   playersDetails[player].cards.push(card)
   const cardTitle: CardValues =
     CardValues[Object.keys(CardValues).find((key) => CardValues[key] === card.value.toLowerCase())]
 
   playersDetails[player].score += getCardValue(cardTitle)
-  setTimeout(() => {
-    checkPlayerScore(playersDetails[player].score)
-  }, 400)
+  if (cardCount === 0) {
+    setTimeout(() => {
+      checkPlayerScore(playersDetails[player].score)
+    }, 400)
+  }
 
   changePlayerScore(player)
 }
@@ -126,8 +137,13 @@ const changePlayerScore: (player: number) => void = (player) => {
 }
 
 const checkPlayerScore: (score: number) => void = (score) => {
-  if (score >= scoreForWin && player === playersInGame - 1) {
-    onGameOver()
+  if (player === playersInGame - 1) {
+    if (!playWithBot && score >= scoreForWin) {
+      onGameOver()
+    }
+    if (playWithBot && (score >= scoreForWin || score === scoreForWin - 1 || score > playersDetails[0].score)) {
+      onGameOver()
+    }
   }
   if (score >= scoreForWin && player !== playersInGame - 1) {
     alert(playersDetails[player].score)
@@ -166,19 +182,40 @@ const winWithTwoAces: () => void = () => {
 
 const nextPlayer: () => void = () => {
   if (playersDetails[player].score - scoreForWin <= 0) {
-    console.log("isPositiveOrZero:" + isPositiveOrZero)
     isPositiveOrZero = true
   }
-  if (!isPositiveOrZero && player === playersInGame - 2) {
-    console.log("isPositiveOrZero:" + isPositiveOrZero, player)
-    lastPlayerWon()
+  if (playWithBot && playersDetails[player].score - scoreForWin <= 0) {
+    onChangePlayer()
+    bot()
   } else {
-    cardList.innerHTML = ""
-    getCard(2, deckId)
-    playersDetails.push({ id: player + 1, cards: [], score: 0 })
-    player += 1
-    playerName.innerHTML = `${player + 1}`
+    if (!isPositiveOrZero && player === playersInGame - 2) {
+      lastPlayerWon()
+    } else {
+      onChangePlayer()
+    }
   }
+}
+
+const onChangePlayer: () => void = () => {
+  cardList.innerHTML = ""
+  getCard(2, deckId)
+  playersDetails.push({ id: player + 1, cards: [], score: 0 })
+  player += 1
+  playerName.innerHTML = `${player + 1}`
+}
+
+const bot: () => void = () => {
+  getCardButton.classList.add("hidden")
+  playerEndButton.classList.add("hidden")
+  let ineterval = setInterval(() => {
+    if (playersDetails[0].score >= playersDetails[1].score && playersDetails[1].score !== 20) {
+      getCard(1, deckId)
+    }
+    if (playersDetails[0].score < playersDetails[1].score) {
+      gameWasEnded = true
+      clearInterval(ineterval)
+    }
+  }, 1000)
 }
 
 const scoring: (playerDetails: Array<IplayersDetails>, isPositiveOrZer: boolean) => Array<IplayersDetails> = (
@@ -217,6 +254,7 @@ const playAgain: () => void = () => {
   result.innerHTML = ""
   cardList.classList.remove("hidden")
   playAgainButton.classList.add("hidden")
+  gameWasEnded = false
   onNewGameStarted()
 }
 
