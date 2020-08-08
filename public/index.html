@@ -13,11 +13,13 @@
         <section class="game-field" id="game-field">
           <div class="game-field__player-info"><span>Player </span> <span id="player-name">1</span></div>
           <div class="game-field__player-score"><span>Score: </span> <span id="player-score">0</span></div>
+
           <div class="game-field__new-game">
             <div class="game-field__wrapper">
               <div class="hidden" id="loading"></div>
               <button class="btn btn--border" id="new-game">New Game<span></span></button>
               <button class="btn btn--border hidden" id="play-again">Play again ?<span></span></button>
+              <div class="game-field__result" id="result"></div>
             </div>
 
             <div class="game-field__players" id="game-field__players">
@@ -39,7 +41,6 @@
           <div class="game-field__player-card">
             <ul class="player-card__list" id="card-list"></ul>
           </div>
-          <div class="game-field__result" id="result"></div>
         </section>
       </main>
     </div>

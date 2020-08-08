@@ -24,11 +24,10 @@ body:before {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  z-index: -1; /* Keep the background behind the content */
+  z-index: -1;
   height: 100%;
-  width: 100%; /* Using Glen Maddern's trick /via @mente */
+  width: 100%;
 
-  /* don't forget to use the prefixes you need */
   transform-origin: top left;
   filter: blur(4px);
 }
@@ -64,7 +63,7 @@ body:before {
   display: flex;
   flex-wrap: wrap;
   align-content: space-between;
-  justify-content: space-between;
+  justify-content: center;
   background-image: url("https://pl.sterlingcdn.com/wp-content/uploads/sites/3/2018/07/blackjack-classic-background.jpg");
   background-size: cover;
   border-radius: 2px;
