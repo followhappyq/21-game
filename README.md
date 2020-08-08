@@ -8,7 +8,7 @@ HTML<br>
 
 # API
 
-<h1><a href="https://deckofcardsapi.com/">https://deckofcardsapi.com/</a></h1>
+<a href="https://deckofcardsapi.com/">https://deckofcardsapi.com/</a>
 
 # Module bundler : Webpack
 
@@ -16,7 +16,7 @@ HTML<br>
 
 To start the game, you need to select the number of players and click a new game.If you select one player, you will play with the bot.<br>
 
-<a href="https://epic-turing-e70bbb.netlify.app/">DEMO</a>
+<h1><a href="https://epic-turing-e70bbb.netlify.app/">DEMO</a></h1>
 
 # Technical task
 
