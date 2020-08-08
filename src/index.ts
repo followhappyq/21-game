@@ -65,6 +65,7 @@ const onNewGameStarted: () => void = () => {
   playerEndButton.classList.remove("hidden")
   newGame.classList.add("hidden")
   gameFieldPlayers.classList.add("hidden")
+  playerName.innerHTML = "1"
 
   if (parseInt(numberOfPlayers.value) === 1) {
     playWithBot = true
