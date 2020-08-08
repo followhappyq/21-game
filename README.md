@@ -8,7 +8,7 @@ HTML<br>
 
 # API
 
-<a href="https://deckofcardsapi.com/">https://deckofcardsapi.com/</a>
+<h1><a href="https://deckofcardsapi.com/">https://deckofcardsapi.com/</a></h1>
 
 # Module bundler : Webpack
 
