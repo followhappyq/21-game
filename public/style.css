@@ -97,6 +97,16 @@ body:before {
   height: 300px;
 }
 
+.game-field__result {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  /* font-weight: bold; */
+  font-size: 20px;
+}
+
 .game-field__player-score,
 .game-field__player-info {
   color: #ffffff;
