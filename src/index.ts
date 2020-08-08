@@ -147,7 +147,12 @@ const checkPlayerScore: (score: number) => void = (score) => {
     }
   }
   if (score >= scoreForWin && player !== playersInGame - 1) {
-    alert(playersDetails[player].score)
+    if (score > 21) {
+      alert("You lose")
+    } else {
+      alert("You have " + score)
+    }
+
     nextPlayer()
   }
 }
